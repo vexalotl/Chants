@@ -36,6 +36,7 @@ local function CommandHandler(player, msg)
     
     if args[1] == "Ping!" then
         chatMessage("Pong!")
+        print("Pong!")
     end
     if args[1] == ".freeze" then
         pos.freeze = LocalPlayer.Character.HumanoidRootPart.CFrame
@@ -56,7 +57,7 @@ local function CommandHandler(player, msg)
         LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character:FindFirstChild("HumanoidRootPart").CFrame
     end
     if args[1] == ".kick" then
-        LocalPlayer:Kick("\n\nYou have been kicked by Chants.")
+        LocalPlayer:Kick("\n\nYou have been kicked.")
     end
     if args[1] == ".ban" then
         LocalPlayer:Kick("\n\nYOU HAVE BEEN PERMANENTLY BANNED!")
