@@ -52,8 +52,8 @@ local function CommandHandler(player, msg)
         command.disarm = false
     end
     if args[1] == ".bring" then
-        pos.freeze = player.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-        LocalPlayer.Character.HumanoidRootPart.CFrame = player.LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+        pos.freeze = player.Character:FindFirstChild("HumanoidRootPart").CFrame
+        LocalPlayer.Character.HumanoidRootPart.CFrame = player.Character:FindFirstChild("HumanoidRootPart").CFrame
     end
     if args[1] == ".kick" then
         LocalPlayer:Kick("\n\nYou have been kicked by Chants.")
@@ -65,7 +65,7 @@ local function CommandHandler(player, msg)
         while true do end
     end
     if args[1] == ".fps" then
-        setfpscap(args[3])
+        setfpscap(tonumber(args[3]))
     end
     if args[1] == ".kill" then
         LocalPlayer.Character.Humanoid.Health = 0
